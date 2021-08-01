@@ -1,14 +1,16 @@
 import React from 'react';
-import { Route, BrowserRouter } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 
 import Home from './pages/Home';
 import Posts from './pages/Posts'
+import NotFound from './pages/NotFound';
 
 export default function Routes() {
   return (
-    <BrowserRouter>
-      <Route path="/" component={Home} />
+    <Switch>
+      <Route exact path="/" component={Home} />
       <Route path="/posts" component={Posts} />
-    </BrowserRouter>
+      <Route component={NotFound}/>
+    </Switch>
   );
 }
