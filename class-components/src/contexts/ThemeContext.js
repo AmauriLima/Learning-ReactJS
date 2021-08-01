@@ -1,24 +1,33 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
 export const ThemeContext = createContext();
 
-export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('dark');
+export class ThemeProvider extends React.Component {
+  state = {
+    theme: JSON.parse(localStorage.getItem('theme'))
+  }
 
-  function handleToggleTheme() {
-    setTheme(prevState => {    
+  handleToggleTheme = () => {
+    this.setState(prevState => {    
       localStorage.setItem('theme', JSON.stringify(
-        prevState === 'dark' ? 'light' : 'dark'
+        prevState.theme === 'dark' ? 'light' : 'dark'
       ))
       return (
-        prevState === 'dark' ? 'light' : 'dark'
+        {theme: prevState.theme === 'dark' ? 'light' : 'dark'}
       )
     });
   }
 
-  return(
-    <ThemeContext.Provider value={{ theme, handleToggleTheme }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  render() {
+    return(
+      <ThemeContext.Provider
+        value={{
+          theme:this.state.theme,
+          handleToggleTheme: this.handleToggleTheme,
+        }}
+      >
+        {this.props.children}
+      </ThemeContext.Provider>
+    );
+  }
 }
