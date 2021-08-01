@@ -3,19 +3,32 @@ import React, { createContext, useEffect, useState } from 'react';
 export const ThemeContext = createContext();
 
 export class ThemeProvider extends React.Component {
-  state = {
-    theme: JSON.parse(localStorage.getItem('theme'))
+  constructor(props) {
+    super(props);
+
+    let theme = 'dark';
+
+    try {
+      theme = JSON.parse(localStorage.getItem('theme')); 
+    } catch (err){
+      console.log(err)
+    }
+
+    this.state = {
+      theme,
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.theme !== this.state.theme) {
+      localStorage.setItem('theme', JSON.stringify(this.state.theme))
+    }
   }
 
   handleToggleTheme = () => {
-    this.setState(prevState => {    
-      localStorage.setItem('theme', JSON.stringify(
-        prevState.theme === 'dark' ? 'light' : 'dark'
-      ))
-      return (
-        {theme: prevState.theme === 'dark' ? 'light' : 'dark'}
-      )
-    });
+    this.setState(prevState => ({
+      theme: prevState.theme === 'dark' ? 'light' : 'dark'
+    }));
   }
 
   render() {

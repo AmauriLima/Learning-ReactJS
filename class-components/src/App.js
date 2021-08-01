@@ -46,7 +46,6 @@ class App extends React.Component {
   render() {
     return (
       <ThemeProvider>
-        <button onClick={() => this.setState({changed: true})}>Change state</button>
         <ThemeContext.Consumer>
           {({ theme }) => {
             return(
