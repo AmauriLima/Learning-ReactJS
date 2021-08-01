@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect, createContext } from 'react';
+import React, { createContext } from 'react';
 import { ThemeProvider } from 'styled-components';
 
 import GlobalStyle from './styles/global';
@@ -8,42 +8,43 @@ import themes from './styles/themes';
 
 export const ThemeContext = createContext();
 
-function App() {
-  const [theme, setTheme] = useState('dark');
-  
-  const firstRender = useRef(true)
-  
-  const currentTheme = useMemo(() => {
-    return themes[theme] || themes.dark;
-  }, [theme]);
-  
-  
-  function handleToggleTheme() {
-    setTheme(prevState => prevState === 'dark' ? 'light' : 'dark');
-  };
+class App extends React.Component {
+  state = {
+    theme: JSON.parse(localStorage.getItem('theme')),
+  }
 
-  useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      setTheme(JSON.parse(localStorage.getItem('theme')));
-      return;
-    }
-    localStorage.setItem('theme', JSON.stringify(theme))
-  }, [theme])
+  handleToggleTheme = () => {
+    this.setState(prevState => {
+      localStorage.setItem('theme', 
+        JSON.stringify(prevState.theme === 'dark' ? 'light' : 'dark')
+      );
 
-  return (
-    <ThemeProvider theme={currentTheme}>
-      <GlobalStyle/>
-      <ThemeContext.Provider
-        value={{ 
-          onToggleTheme: handleToggleTheme,
-          selectedTheme: theme,
-        }}
-      >
-        <Layout/>
-      </ThemeContext.Provider>
-    </ThemeProvider>
-  );
-};
+      return(
+        { theme: prevState.theme === 'dark' ? 'light' : 'dark' }
+      )
+    });
+  }
+
+  render() {
+    const { theme } = this.state;
+
+    return(
+      <ThemeProvider theme={themes[theme] || themes.dark}>
+        <GlobalStyle/>
+        <ThemeContext.Provider
+          value={{ 
+            onToggleTheme: this.handleToggleTheme,
+            selectedTheme: theme,
+          }}
+        >
+          <Layout
+            onToggleTheme={this.handleToggleTheme}
+            selectedTheme={theme}
+          />
+        </ThemeContext.Provider>
+      </ThemeProvider>
+    );
+  }
+}
 
 export default App;
